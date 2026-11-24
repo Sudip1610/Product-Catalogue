@@ -29,7 +29,8 @@ export function catalogueRouter(productService: ProductService): Router {
   // GET /categories/:slug  — Express URL-decodes params automatically
   router.get('/categories/:slug', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const slug = req.params['slug'] ?? '';
+      const rawSlug = req.params['slug'];
+      const slug = typeof rawSlug === 'string' ? rawSlug : (rawSlug?.[0] ?? '');
       const view = await productService.getCategoryView(slug);
       res.json(view);
     } catch (err) {
@@ -62,7 +63,8 @@ export function catalogueRouter(productService: ProductService): Router {
   // GET /products/:id
   router.get('/products/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = req.params['id'] ?? '';
+      const rawId = req.params['id'];
+      const id = typeof rawId === 'string' ? rawId : (rawId?.[0] ?? '');
       const item = await productService.getById(id);
       res.json({ item });
     } catch (err) {

@@ -1,7 +1,8 @@
 import { randomUUID } from 'crypto';
 import express from 'express';
+import type { Request, Response } from 'express';
 import helmet from 'helmet';
-import pinoHttp from 'pino-http';
+import { pinoHttp } from 'pino-http';
 import pino from 'pino';
 import rateLimit from 'express-rate-limit';
 import { catalogueRouter } from './routes/catalogue.routes.js';
@@ -54,7 +55,7 @@ export function createApp(deps: AppDeps, rlOverrides: RateLimitOverrides = {}) {
   app.use(
     pinoHttp({
       logger,
-      genReqId: (_req, res) => {
+      genReqId: (_req: Request, res: Response) => {
         const id = randomUUID();
         res.setHeader('X-Request-Id', id);
         return id;

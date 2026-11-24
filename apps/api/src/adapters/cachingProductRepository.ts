@@ -1,6 +1,5 @@
 import type { ProductRepository } from '../domain/ports.js';
 import type { Product } from '../domain/product.js';
-import { UpstreamError } from '../domain/errors.js';
 import pino from 'pino';
 
 const logger = pino({ name: 'CachingProductRepository' });

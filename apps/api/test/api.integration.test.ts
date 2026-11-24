@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/http/app.js';
 import { ProductService } from '../src/services/productService.js';
@@ -273,7 +273,6 @@ describe('POST /api/v1/enquiries', () => {
 describe('Rate limiting', () => {
   it('returns 429 RATE_LIMITED after exceeding enquiry limit', async () => {
     // Create a separate app with very low enquiry limit
-    const { app } = buildApp();
     const rateLimitedApp = (() => {
       resetIdCounter();
       const repo = new FakeProductRepository(testProducts);
