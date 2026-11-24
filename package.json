@@ -1,6 +1,7 @@
 {
   "name": "product-catalogue",
   "private": true,
+  "type": "module",
   "workspaces": ["apps/api", "apps/web"],
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/web\"",

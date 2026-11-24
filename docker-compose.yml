@@ -4,20 +4,31 @@ services:
   mailpit:
     image: axllent/mailpit:v1.21
     ports:
-      - '1025:1025'   # SMTP
+      - '1025:1025'   # SMTP port
       - '8025:8025'   # Web UI
     restart: unless-stopped
 
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/api/Dockerfile
     ports:
       - '3001:3001'
-    env_file: .env
     environment:
+      PORT: 3001
+      NODE_ENV: production
+      CORS_ORIGINS: http://localhost:8080,http://localhost:5173
+      FAKESTORE_BASE_URL: https://fakestoreapi.com
+      PRODUCT_CACHE_TTL_SECONDS: 300
+      DEFAULT_CURRENCY: USD
+      FEATURED_PRODUCT_IDS: 1,3,5,6,12
+      CATEGORY_TOP_RATED_COUNT: 3
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
+      SMTP_USER: ''
+      SMTP_PASS: ''
+      MAIL_FROM: catalogue@example.local
+      SALES_INBOX_EMAIL: sales@example.local
     depends_on:
       - mailpit
     healthcheck:
@@ -30,10 +41,11 @@ services:
 
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/web/Dockerfile
     ports:
-      - '8080:80'
+      - '8080:8080'
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     restart: unless-stopped
