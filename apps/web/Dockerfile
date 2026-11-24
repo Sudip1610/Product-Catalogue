@@ -24,9 +24,10 @@ COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
 
 # Configure temp paths and permissions for non-root execution
-RUN sed -i 's,/var/run/nginx.pid,/tmp/nginx.pid,g' /etc/nginx/nginx.conf && \
+RUN sed -i '/user  nginx;/d' /etc/nginx/nginx.conf && \
+    sed -i 's,pid .*,pid /tmp/nginx.pid;,g' /etc/nginx/nginx.conf && \
     sed -i '/http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;' /etc/nginx/nginx.conf && \
-    chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d /var/cache/nginx
+    chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d /var/cache/nginx /var/log/nginx
 
 # Non-root user
 USER nginx
