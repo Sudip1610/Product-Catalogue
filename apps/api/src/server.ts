@@ -14,7 +14,7 @@ const app = createApp({
   },
 });
 
-app.listen(config.PORT, () => {
+app.listen(config.PORT, '0.0.0.0', () => {
   console.info(`[server] Listening on http://localhost:${config.PORT}`);
   console.info(`[server] Health: http://localhost:${config.PORT}/health`);
   console.info(`[server] API:    http://localhost:${config.PORT}/api/v1`);

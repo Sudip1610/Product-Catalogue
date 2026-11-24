@@ -1,11 +1,46 @@
+import fs from 'fs';
+import path from 'path';
 import { z } from 'zod';
+
+function loadDotEnv(): void {
+  const candidateDirs = [
+    process.cwd(),
+    path.resolve(process.cwd(), '..'),
+    path.resolve(process.cwd(), '../..'),
+  ];
+  for (const dir of candidateDirs) {
+    const envFile = path.join(dir, '.env');
+    if (fs.existsSync(envFile)) {
+      try {
+        const content = fs.readFileSync(envFile, 'utf-8');
+        for (const line of content.split(/\r?\n/)) {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith('#')) continue;
+          const eqIdx = trimmed.indexOf('=');
+          if (eqIdx > 0) {
+            const key = trimmed.slice(0, eqIdx).trim();
+            const val = trimmed.slice(eqIdx + 1).trim();
+            if (process.env[key] === undefined) {
+              process.env[key] = val;
+            }
+          }
+        }
+        break;
+      } catch {
+        // ignore read errors
+      }
+    }
+  }
+}
+
+loadDotEnv();
 
 const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3001),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   CORS_ORIGINS: z
     .string()
-    .min(1)
+    .default('http://localhost:5173,http://localhost:8080')
     .transform((v) => v.split(',').map((s) => s.trim())),
   FAKESTORE_BASE_URL: z.string().url().default('https://fakestoreapi.com'),
   PRODUCT_CACHE_TTL_SECONDS: z.coerce.number().int().nonnegative().default(300),
